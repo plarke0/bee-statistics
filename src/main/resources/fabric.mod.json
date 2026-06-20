@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "bee-statistics",
+	"version": "${version}",
+	"name": "Bee Statistics",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"plarke"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/bee-statistics/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.plarke.bee_statistics.BeeStatistics"
+		],
+		"fabric-datagen": [
+			"net.plarke.bee_statistics.BeeStatisticsDataGenerator"
+		],
+		"client": [
+			"net.plarke.bee_statistics.BeeStatisticsClient"
+		]
+	},
+	"mixins": [
+		"bee-statistics.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
