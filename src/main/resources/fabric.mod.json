@@ -3,13 +3,13 @@
 	"id": "bee-statistics",
 	"version": "${version}",
 	"name": "Bee Statistics",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod for tracking the various statistics of beehives and honey production.",
 	"authors": [
 		"plarke"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://plarke.net/",
+		"sources": "https://github.com/plarke0/bee-statistics"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/bee-statistics/icon.png",
