@@ -2,6 +2,7 @@ package net.plarke.bee_statistics.command;
 
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.text.Text;
+import net.plarke.bee_statistics.exceptions.InvalidBlockTypeAtPosition;
 import net.plarke.bee_statistics.registry.HiveRegistry;
 import net.plarke.bee_statistics.system.JsonExporter;
 
@@ -33,7 +34,12 @@ public class HiveCommand {
                                             ServerCommandSource src = ctx.getSource();
                                             BlockPos pos = BlockPosArgumentType.getBlockPos(ctx, "pos");
                                             String id = StringArgumentType.getString(ctx, "id");
-                                            HiveRegistry.add(pos, id, src.getWorld().getTime());
+                                            try {
+                                                HiveRegistry.add(pos, id, src.getWorld());
+                                            } catch (InvalidBlockTypeAtPosition e) {
+                                                src.sendError(Text.literal("Tracked blocks must be bee hives or bee nests"));
+                                                return 0;
+                                            }
                                             return 1;
                                         })
                                 )
@@ -57,6 +63,7 @@ public class HiveCommand {
                         })
                 )
                 //TODO Add a list command to view tracked hives (<id>: <pos>)
+                //TODO Add a command to stop/start data collection
         );
     }
 }
