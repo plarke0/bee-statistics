@@ -56,6 +56,7 @@ public class HiveCommand {
                 )
                 // UNTRACK
                 .then(CommandManager.literal("untrack")
+                        // USING ID
                         .then(CommandManager.argument("id", StringArgumentType.word())
                                 .executes(ctx -> {
                                     ServerCommandSource src = ctx.getSource();
@@ -71,6 +72,7 @@ public class HiveCommand {
                                     }
                                 })
                         )
+                        // USING POSITION
                         .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
                                 .executes(ctx -> {
                                     ServerCommandSource src = ctx.getSource();
