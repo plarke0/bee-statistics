@@ -112,7 +112,7 @@ public class HiveCommand {
                         .executes(ctx -> {
                             ServerCommandSource src = ctx.getSource();
                             for (HiveData hiveData : HiveRegistry.getAll()) {
-                                String hiveEntry = hiveData.id + ": " + hiveData.pos.toString();
+                                String hiveEntry = hiveData.id + ": " + stringifyPos(hiveData.pos);
                                 src.sendMessage(Text.literal(hiveEntry));
                             }
                             if (HiveRegistry.isEmpty()) {
