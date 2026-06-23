@@ -34,6 +34,10 @@ public class HiveRegistry {
         return HIVES.values();
     }
 
+    public static Boolean isEmpty() {
+        return HIVES.isEmpty();
+    }
+
     public static HiveData get(BlockPos pos) {
         return HIVES.get(pos);
     }

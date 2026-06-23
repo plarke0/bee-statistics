@@ -2,6 +2,7 @@ package net.plarke.bee_statistics.command;
 
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.text.Text;
+import net.plarke.bee_statistics.data.HiveData;
 import net.plarke.bee_statistics.exceptions.InvalidBlockTypeAtPosition;
 import net.plarke.bee_statistics.registry.HiveRegistry;
 import net.plarke.bee_statistics.system.JsonExporter;
@@ -71,6 +72,20 @@ public class HiveCommand {
                         .executes(ctx -> {
                             JsonExporter.export();
                             return 1;
+                        })
+                )
+                // LIST
+                .then(CommandManager.literal("list")
+                        .executes(ctx -> {
+                            ServerCommandSource src = ctx.getSource();
+                            for (HiveData hiveData : HiveRegistry.getAll()) {
+                                String hiveEntry = hiveData.id + ": " + hiveData.pos.toString();
+                                src.sendMessage(Text.literal(hiveEntry));
+                            }
+                            if (HiveRegistry.isEmpty()) {
+                                src.sendMessage(Text.literal("No hives are currently being tracked"));
+                            }
+                            return 0;
                         })
                 )
                 //TODO Add a list command to view tracked hives (<id>: <pos>)
