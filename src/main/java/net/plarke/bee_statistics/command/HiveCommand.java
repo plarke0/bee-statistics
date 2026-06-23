@@ -25,6 +25,10 @@ public class HiveCommand {
         );
     }
 
+    private static String stringifyPos(BlockPos pos) {
+        return "(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")";
+    }
+
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("beehive")
                 // TRACK
@@ -60,6 +64,21 @@ public class HiveCommand {
                                         return 1;
                                     } else {
                                         String removeErrorMessage = "\"" + id + "\" was unable to be removed from registry";
+                                        src.sendError(Text.literal(removeErrorMessage));
+                                        return 0;
+                                    }
+                                })
+                        )
+                        .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+                                .executes(ctx -> {
+                                    ServerCommandSource src = ctx.getSource();
+                                    BlockPos pos = BlockPosArgumentType.getBlockPos(ctx, "pos");
+                                    if (HiveRegistry.removeByPos(pos)) {
+                                        String removeMessage = "Hive at " + stringifyPos(pos) + " successfully removed from registry";
+                                        src.sendMessage(Text.literal(removeMessage));
+                                        return 1;
+                                    } else {
+                                        String removeErrorMessage = "Hive at " + stringifyPos(pos) + " was unable to be removed from registry";
                                         src.sendError(Text.literal(removeErrorMessage));
                                         return 0;
                                     }

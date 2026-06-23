@@ -32,6 +32,10 @@ public class HiveRegistry {
         return HIVES.values().removeIf(h -> h.id.equals(id));
     }
 
+    public static Boolean removeByPos(BlockPos pos) {
+        return HIVES.values().removeIf(h -> h.pos.equals(pos));
+    }
+
     public static Collection<HiveData> getAll() {
         return HIVES.values();
     }
