@@ -16,6 +16,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.math.BlockPos;
 
+import java.nio.file.FileAlreadyExistsException;
+
 
 public class HiveCommand {
     public static void register() {
@@ -87,11 +89,23 @@ public class HiveCommand {
                 )
                 // EXPORT
                 .then(CommandManager.literal("export")
-                        //TODO Add command feedback
-                        .executes(ctx -> {
-                            JsonExporter.export();
-                            return 1;
-                        })
+                        .then(CommandManager.argument("filename", StringArgumentType.word())
+                                .executes(ctx -> {
+                                    ServerCommandSource src = ctx.getSource();
+                                    String fileName = StringArgumentType.getString(ctx, "filename");
+
+                                    try {
+                                        JsonExporter.export(fileName);
+                                    } catch (FileAlreadyExistsException e) {
+                                        src.sendError(Text.literal(e.getMessage()));
+                                        return 0;
+                                    }
+
+                                    String exportMessage = "Successfully saved data to \"" + fileName + ".json\"";
+                                    src.sendMessage(Text.literal(exportMessage));
+                                    return 1;
+                                })
+                        )
                 )
                 // LIST
                 .then(CommandManager.literal("list")
