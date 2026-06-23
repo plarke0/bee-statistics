@@ -88,7 +88,6 @@ public class HiveCommand {
                             return 0;
                         })
                 )
-                //TODO Add a list command to view tracked hives (<id>: <pos>)
                 //TODO Add a command to stop/start data collection
         );
     }
