@@ -130,6 +130,7 @@ public class HiveCommand {
                         .then(CommandManager.literal("start")
                                 .executes(ctx -> {
                                     HiveTracker.trackingActive = true;
+                                    ctx.getSource().sendMessage(Text.literal("Starting data collection"));
                                     return 1;
                                 })
                         )
@@ -137,6 +138,7 @@ public class HiveCommand {
                         .then(CommandManager.literal("stop")
                                 .executes(ctx -> {
                                     HiveTracker.trackingActive = false;
+                                    ctx.getSource().sendMessage(Text.literal("Stopping data collection"));
                                     return 1;
                                 })
                         )
