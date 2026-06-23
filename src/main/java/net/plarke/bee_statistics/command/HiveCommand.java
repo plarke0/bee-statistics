@@ -5,6 +5,7 @@ import net.minecraft.text.Text;
 import net.plarke.bee_statistics.data.HiveData;
 import net.plarke.bee_statistics.exceptions.InvalidBlockTypeAtPosition;
 import net.plarke.bee_statistics.registry.HiveRegistry;
+import net.plarke.bee_statistics.system.HiveTracker;
 import net.plarke.bee_statistics.system.JsonExporter;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -128,13 +129,15 @@ public class HiveCommand {
                         // START
                         .then(CommandManager.literal("start")
                                 .executes(ctx -> {
-                                    return 0;
+                                    HiveTracker.trackingActive = true;
+                                    return 1;
                                 })
                         )
                         // STOP
                         .then(CommandManager.literal("stop")
                                 .executes(ctx -> {
-                                    return 0;
+                                    HiveTracker.trackingActive = false;
+                                    return 1;
                                 })
                         )
                         // RESET

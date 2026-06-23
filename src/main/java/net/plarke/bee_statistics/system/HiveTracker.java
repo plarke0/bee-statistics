@@ -12,7 +12,12 @@ import net.minecraft.block.BeehiveBlock;
 
 public class HiveTracker {
 
+    public static Boolean trackingActive = false;
+
     public static void tick(MinecraftServer server) {
+        if (!trackingActive) {
+            return;
+        }
         //TODO Add Arbitrary dimension support
         ServerWorld world = server.getOverworld();
         long currentTime = world.getTime();
