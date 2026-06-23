@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class HiveRegistry {
+    //TODO Add restrictions to duplicate id's and duplicate positions
     private static final Map<BlockPos, HiveData> HIVES = new HashMap<>();
 
     public static void add(BlockPos pos, String id, ServerWorld world) throws InvalidBlockTypeAtPosition {
