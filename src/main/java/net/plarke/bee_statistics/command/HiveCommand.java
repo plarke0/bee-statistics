@@ -123,7 +123,27 @@ public class HiveCommand {
                             return 0;
                         })
                 )
-                //TODO Add a command to stop/start data collection
+                // TRACKING
+                .then(CommandManager.literal("tracking")
+                        // START
+                        .then(CommandManager.literal("start")
+                                .executes(ctx -> {
+                                    return 0;
+                                })
+                        )
+                        // STOP
+                        .then(CommandManager.literal("stop")
+                                .executes(ctx -> {
+                                    return 0;
+                                })
+                        )
+                        // RESET
+                        .then(CommandManager.literal("reset")
+                                .executes(ctx -> {
+                                    return 0;
+                                })
+                        )
+                )
         );
     }
 }
