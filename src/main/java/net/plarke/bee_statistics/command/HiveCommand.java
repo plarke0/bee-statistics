@@ -18,6 +18,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.math.BlockPos;
 
 import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 
 
 public class HiveCommand {
@@ -145,6 +146,17 @@ public class HiveCommand {
                         // RESET
                         .then(CommandManager.literal("reset")
                                 .executes(ctx -> {
+                                    ServerCommandSource src = ctx.getSource();
+                                    if (HiveRegistry.isEmpty()) {
+                                        src.sendMessage(Text.literal("There are currently no hives being tracked"));
+                                        return 1;
+                                    }
+
+                                    for (HiveData hiveData : HiveRegistry.getAll()) {
+                                        hiveData.logs = new ArrayList<>();
+                                    }
+                                    src.sendMessage(Text.literal("Successfully reset all data logs for tracked hives"));
+
                                     return 0;
                                 })
                         )
