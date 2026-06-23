@@ -36,6 +36,8 @@ public class HiveCommand {
                                             String id = StringArgumentType.getString(ctx, "id");
                                             try {
                                                 HiveRegistry.add(pos, id, src.getWorld());
+                                                String trackMessage = "\"" + id + "\" successfully added to registry";
+                                                src.sendMessage(Text.literal(trackMessage));
                                             } catch (InvalidBlockTypeAtPosition e) {
                                                 src.sendError(Text.literal("Tracked blocks must be bee hives or bee nests"));
                                                 return 0;
@@ -49,14 +51,23 @@ public class HiveCommand {
                 .then(CommandManager.literal("untrack")
                         .then(CommandManager.argument("id", StringArgumentType.word())
                                 .executes(ctx -> {
+                                    ServerCommandSource src = ctx.getSource();
                                     String id = StringArgumentType.getString(ctx, "id");
-                                    HiveRegistry.removeById(id);
-                                    return 1;
+                                    if (HiveRegistry.removeById(id)) {
+                                        String removeMessage = "\"" + id + "\" successfully removed from registry";
+                                        src.sendMessage(Text.literal(removeMessage));
+                                        return 1;
+                                    } else {
+                                        String removeErrorMessage = "\"" + id + "\" was unable to be removed from registry";
+                                        src.sendError(Text.literal(removeErrorMessage));
+                                        return 0;
+                                    }
                                 })
                         )
                 )
                 // EXPORT
                 .then(CommandManager.literal("export")
+                        //TODO Add command feedback
                         .executes(ctx -> {
                             JsonExporter.export();
                             return 1;

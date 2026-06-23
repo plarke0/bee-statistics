@@ -26,8 +26,8 @@ public class HiveRegistry {
         HIVES.put(pos, new HiveData(id, pos, time, 0));
     }
 
-    public static void removeById(String id) {
-        HIVES.values().removeIf(h -> h.id.equals(id));
+    public static Boolean removeById(String id) {
+        return HIVES.values().removeIf(h -> h.id.equals(id));
     }
 
     public static Collection<HiveData> getAll() {
