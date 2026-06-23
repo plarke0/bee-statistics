@@ -1,5 +1,6 @@
 package net.plarke.bee_statistics.registry;
 
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -19,11 +20,12 @@ public class HiveRegistry {
         long time = world.getTime();
         BlockEntity entity = world.getBlockEntity(pos);
 
-        if (!(entity instanceof BeehiveBlockEntity)) {
+        if (!(entity instanceof BeehiveBlockEntity beehive)) {
             throw new InvalidBlockTypeAtPosition("Block type must be either a bee hive or a bee nest");
         }
-        //TODO Get an actual value for initialHoneyLevel
-        HIVES.put(pos, new HiveData(id, pos, time, 0));
+
+        int honeyLevel = beehive.getCachedState().get(BeehiveBlock.HONEY_LEVEL);
+        HIVES.put(pos, new HiveData(id, pos, time, honeyLevel));
     }
 
     public static Boolean removeById(String id) {
