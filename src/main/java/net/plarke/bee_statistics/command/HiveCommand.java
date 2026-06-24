@@ -35,95 +35,118 @@ public class HiveCommand {
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("beehive")
-                // TRACK
-                .then(CommandManager.literal("track")
-                        .then(CommandManager.argument("id", StringArgumentType.word())
+                // REGISTRY
+                .then(CommandManager.literal("registry")
+                        // ADD
+                        .then(CommandManager.literal("add")
+                                .then(CommandManager.argument("id", StringArgumentType.word())
+                                        .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+                                                .executes(ctx -> {
+                                                    ServerCommandSource src = ctx.getSource();
+                                                    BlockPos pos = BlockPosArgumentType.getBlockPos(ctx, "pos");
+                                                    String id = StringArgumentType.getString(ctx, "id");
+                                                    try {
+                                                        HiveRegistry.add(pos, id, src.getWorld());
+                                                        String trackMessage = "\"" + id + "\" successfully added to registry";
+                                                        src.sendMessage(Text.literal(trackMessage));
+                                                    } catch (InvalidBlockTypeAtPosition e) {
+                                                        src.sendError(Text.literal("Tracked blocks must be bee hives or bee nests"));
+                                                        return 0;
+                                                    }
+                                                    return 1;
+                                                })
+                                        )
+                                )
+                        )
+                        // REMOVE
+                        .then(CommandManager.literal("remove")
+                                // USING ID
+                                .then(CommandManager.argument("id", StringArgumentType.word())
+                                        .executes(ctx -> {
+                                            ServerCommandSource src = ctx.getSource();
+                                            String id = StringArgumentType.getString(ctx, "id");
+                                            if (HiveRegistry.removeById(id)) {
+                                                String removeMessage = "\"" + id + "\" successfully removed from registry";
+                                                src.sendMessage(Text.literal(removeMessage));
+                                                return 1;
+                                            } else {
+                                                String removeErrorMessage = "\"" + id + "\" was unable to be removed from registry";
+                                                src.sendError(Text.literal(removeErrorMessage));
+                                                return 0;
+                                            }
+                                        })
+                                )
+                                // USING POSITION
                                 .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
                                         .executes(ctx -> {
                                             ServerCommandSource src = ctx.getSource();
                                             BlockPos pos = BlockPosArgumentType.getBlockPos(ctx, "pos");
-                                            String id = StringArgumentType.getString(ctx, "id");
-                                            try {
-                                                HiveRegistry.add(pos, id, src.getWorld());
-                                                String trackMessage = "\"" + id + "\" successfully added to registry";
-                                                src.sendMessage(Text.literal(trackMessage));
-                                            } catch (InvalidBlockTypeAtPosition e) {
-                                                src.sendError(Text.literal("Tracked blocks must be bee hives or bee nests"));
+                                            if (HiveRegistry.removeByPos(pos)) {
+                                                String removeMessage = "Hive at " + stringifyPos(pos) + " successfully removed from registry";
+                                                src.sendMessage(Text.literal(removeMessage));
+                                                return 1;
+                                            } else {
+                                                String removeErrorMessage = "Hive at " + stringifyPos(pos) + " was unable to be removed from registry";
+                                                src.sendError(Text.literal(removeErrorMessage));
                                                 return 0;
                                             }
+                                        })
+                                )
+                        )
+                        // LIST
+                        .then(CommandManager.literal("list")
+                                .executes(ctx -> {
+                                    ServerCommandSource src = ctx.getSource();
+                                    for (HiveData hiveData : HiveRegistry.getAll()) {
+                                        String hiveEntry = hiveData.id + ": " + stringifyPos(hiveData.pos);
+                                        src.sendMessage(Text.literal(hiveEntry));
+                                    }
+                                    if (HiveRegistry.isEmpty()) {
+                                        src.sendMessage(Text.literal("No hives are currently being tracked"));
+                                    }
+                                    return 0;
+                                })
+                        )
+                )
+                // DATA
+                .then(CommandManager.literal("data")
+                        // EXPORT
+                        .then(CommandManager.literal("export")
+                                .then(CommandManager.argument("filename", StringArgumentType.word())
+                                        .executes(ctx -> {
+                                            ServerCommandSource src = ctx.getSource();
+                                            String fileName = StringArgumentType.getString(ctx, "filename");
+
+                                            try {
+                                                JsonExporter.export(fileName);
+                                            } catch (FileAlreadyExistsException e) {
+                                                src.sendError(Text.literal(e.getMessage()));
+                                                return 0;
+                                            }
+
+                                            String exportMessage = "Successfully saved data to \"" + fileName + ".json\"";
+                                            src.sendMessage(Text.literal(exportMessage));
                                             return 1;
                                         })
                                 )
                         )
-                )
-                // UNTRACK
-                .then(CommandManager.literal("untrack")
-                        // USING ID
-                        .then(CommandManager.argument("id", StringArgumentType.word())
+                        // RESET
+                        .then(CommandManager.literal("reset")
                                 .executes(ctx -> {
                                     ServerCommandSource src = ctx.getSource();
-                                    String id = StringArgumentType.getString(ctx, "id");
-                                    if (HiveRegistry.removeById(id)) {
-                                        String removeMessage = "\"" + id + "\" successfully removed from registry";
-                                        src.sendMessage(Text.literal(removeMessage));
+                                    if (HiveRegistry.isEmpty()) {
+                                        src.sendMessage(Text.literal("There are currently no hives being tracked"));
                                         return 1;
-                                    } else {
-                                        String removeErrorMessage = "\"" + id + "\" was unable to be removed from registry";
-                                        src.sendError(Text.literal(removeErrorMessage));
-                                        return 0;
-                                    }
-                                })
-                        )
-                        // USING POSITION
-                        .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
-                                .executes(ctx -> {
-                                    ServerCommandSource src = ctx.getSource();
-                                    BlockPos pos = BlockPosArgumentType.getBlockPos(ctx, "pos");
-                                    if (HiveRegistry.removeByPos(pos)) {
-                                        String removeMessage = "Hive at " + stringifyPos(pos) + " successfully removed from registry";
-                                        src.sendMessage(Text.literal(removeMessage));
-                                        return 1;
-                                    } else {
-                                        String removeErrorMessage = "Hive at " + stringifyPos(pos) + " was unable to be removed from registry";
-                                        src.sendError(Text.literal(removeErrorMessage));
-                                        return 0;
-                                    }
-                                })
-                        )
-                )
-                // EXPORT
-                .then(CommandManager.literal("export")
-                        .then(CommandManager.argument("filename", StringArgumentType.word())
-                                .executes(ctx -> {
-                                    ServerCommandSource src = ctx.getSource();
-                                    String fileName = StringArgumentType.getString(ctx, "filename");
-
-                                    try {
-                                        JsonExporter.export(fileName);
-                                    } catch (FileAlreadyExistsException e) {
-                                        src.sendError(Text.literal(e.getMessage()));
-                                        return 0;
                                     }
 
-                                    String exportMessage = "Successfully saved data to \"" + fileName + ".json\"";
-                                    src.sendMessage(Text.literal(exportMessage));
-                                    return 1;
+                                    for (HiveData hiveData : HiveRegistry.getAll()) {
+                                        hiveData.logs = new ArrayList<>();
+                                    }
+                                    src.sendMessage(Text.literal("Successfully reset all data logs for tracked hives"));
+
+                                    return 0;
                                 })
                         )
-                )
-                // LIST
-                .then(CommandManager.literal("list")
-                        .executes(ctx -> {
-                            ServerCommandSource src = ctx.getSource();
-                            for (HiveData hiveData : HiveRegistry.getAll()) {
-                                String hiveEntry = hiveData.id + ": " + stringifyPos(hiveData.pos);
-                                src.sendMessage(Text.literal(hiveEntry));
-                            }
-                            if (HiveRegistry.isEmpty()) {
-                                src.sendMessage(Text.literal("No hives are currently being tracked"));
-                            }
-                            return 0;
-                        })
                 )
                 // TRACKING
                 .then(CommandManager.literal("tracking")
@@ -141,23 +164,6 @@ public class HiveCommand {
                                     HiveTracker.trackingActive = false;
                                     ctx.getSource().sendMessage(Text.literal("Stopping data collection"));
                                     return 1;
-                                })
-                        )
-                        // RESET
-                        .then(CommandManager.literal("reset")
-                                .executes(ctx -> {
-                                    ServerCommandSource src = ctx.getSource();
-                                    if (HiveRegistry.isEmpty()) {
-                                        src.sendMessage(Text.literal("There are currently no hives being tracked"));
-                                        return 1;
-                                    }
-
-                                    for (HiveData hiveData : HiveRegistry.getAll()) {
-                                        hiveData.logs = new ArrayList<>();
-                                    }
-                                    src.sendMessage(Text.literal("Successfully reset all data logs for tracked hives"));
-
-                                    return 0;
                                 })
                         )
                 )
