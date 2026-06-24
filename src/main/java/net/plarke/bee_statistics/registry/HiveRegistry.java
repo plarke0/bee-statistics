@@ -3,7 +3,9 @@ package net.plarke.bee_statistics.registry;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 import net.plarke.bee_statistics.data.HiveData;
 
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +20,6 @@ public class HiveRegistry {
     private static final Map<BlockPos, HiveData> HIVES = new HashMap<>();
 
     public static void add(BlockPos pos, String id, ServerWorld world) throws InvalidBlockTypeAtPosition {
-        long time = world.getTime();
         BlockEntity entity = world.getBlockEntity(pos);
 
         if (!(entity instanceof BeehiveBlockEntity beehive)) {
@@ -26,7 +27,8 @@ public class HiveRegistry {
         }
 
         int honeyLevel = beehive.getCachedState().get(BeehiveBlock.HONEY_LEVEL);
-        HIVES.put(pos, new HiveData(id, pos, time, honeyLevel));
+        RegistryKey<World> worldKey = world.getRegistryKey();
+        HIVES.put(pos, new HiveData(id, pos, worldKey, honeyLevel));
     }
 
     public static Boolean removeById(String id) {

@@ -1,5 +1,6 @@
 package net.plarke.bee_statistics.system;
 
+import net.minecraft.world.World;
 import net.plarke.bee_statistics.registry.HiveRegistry;
 import net.plarke.bee_statistics.data.HiveLog;
 import net.plarke.bee_statistics.data.HiveData;
@@ -19,22 +20,35 @@ public class HiveTracker {
             return;
         }
         //TODO Add Arbitrary dimension support
-        ServerWorld world = server.getOverworld();
-        long currentTime = world.getTime();
+        ServerWorld overworld = server.getWorld(World.OVERWORLD);
+        ServerWorld nether = server.getWorld(World.NETHER);
+        ServerWorld end = server.getWorld(World.END);
 
         for (HiveData hive : HiveRegistry.getAll()) {
+            ServerWorld world = null;
+            if (hive.worldKey.equals(World.OVERWORLD)) {
+                world = overworld;
+            } else if (hive.worldKey.equals(World.NETHER)) {
+                world = nether;
+            } else if (hive.worldKey.equals(World.END)) {
+                world = end;
+            }
+
+            if (world == null) {
+                continue;
+            }
             BlockEntity entity = world.getBlockEntity(hive.pos);
 
             if (entity instanceof BeehiveBlockEntity beehive) {
                 int honeyLevel = beehive.getCachedState().get(BeehiveBlock.HONEY_LEVEL);
+                hive.timeSinceDeposit += 1;
 
                 if (honeyLevel > hive.lastHoneyLevel) {
-                    long duration = currentTime - hive.lastDepositTime;
                     int fillAmount = honeyLevel - hive.lastHoneyLevel;
 
-                    hive.logs.add(new HiveLog(currentTime, duration, honeyLevel, fillAmount));
+                    hive.logs.add(new HiveLog(hive.timeSinceDeposit, honeyLevel, fillAmount));
 
-                    hive.lastDepositTime = currentTime;
+                    hive.timeSinceDeposit = 0;
                     hive.lastHoneyLevel = honeyLevel;
                 }
 
