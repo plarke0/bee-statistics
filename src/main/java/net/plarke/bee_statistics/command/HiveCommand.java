@@ -34,7 +34,7 @@ public class HiveCommand {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager.literal("beehive")
+        dispatcher.register(CommandManager.literal("beestats")
                 // REGISTRY
                 .then(CommandManager.literal("registry")
                         // ADD
