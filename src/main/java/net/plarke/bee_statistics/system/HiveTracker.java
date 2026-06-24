@@ -19,7 +19,6 @@ public class HiveTracker {
         if (!trackingActive) {
             return;
         }
-        //TODO Add Arbitrary dimension support
         ServerWorld overworld = server.getWorld(World.OVERWORLD);
         ServerWorld nether = server.getWorld(World.NETHER);
         ServerWorld end = server.getWorld(World.END);
